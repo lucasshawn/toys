@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oci-curl-cs", "oci-curl-cs.csproj", "{DF61B249-B8DC-4A6C-9F2D-5FB7DECC2F50}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF61B249-B8DC-4A6C-9F2D-5FB7DECC2F50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF61B249-B8DC-4A6C-9F2D-5FB7DECC2F50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF61B249-B8DC-4A6C-9F2D-5FB7DECC2F50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF61B249-B8DC-4A6C-9F2D-5FB7DECC2F50}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {344F0FFE-C5C8-49B7-901A-1F862A81BDD3}
+	EndGlobalSection
+EndGlobal
