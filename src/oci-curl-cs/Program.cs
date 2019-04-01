@@ -24,18 +24,96 @@ namespace Oracle.Oci
     using Org.BouncyCastle.Crypto.Parameters;
     using Org.BouncyCastle.OpenSsl;
     using Org.BouncyCastle.Security;
+    using Rhyous.SimpleArgs;
 
     public class Signing
     {
-        public static void Main(string[] args)
+        static private string parseArg(string[] args, string argName, string argNameShortcut, bool isRequired, string defaultStr = "")
         {
-            var tenancyId = "ocid1.tenancy.oc1..aaaaaaaaba3pv6wkcr4jqae5f15p2b2m2yt2j6rx32uzr4h25vqstifsfdsq";
-            var compartmentId = "ocid1.compartment.oc1..aaaaaaaam3we6vgnherjq5q2idnccdflvjsnog7mlr6rtdb25gilchfeyjxa";
-            var userId = "ocid1.user.oc1..aaaaaaaat5nvwcna5j6aqzjcaty5eqbb6qt2jvpkanghtgdaqedqw3rynjq";
-            var fingerprint = "20:3b:97:13:55:1c:5b:0d:d3:37:d8:50:4e:c5:3a:34";
-            var privateKeyPath = "private.pem";
-            var privateKeyPassphrase = "password";
+            int idx = -1;
+            for (idx = 0; idx < args.Count(); idx++)
+            {
+                if (args[idx].Equals($"--{argName}", StringComparison.InvariantCultureIgnoreCase) || 
+                    args[idx].Equals($"-{argNameShortcut}", StringComparison.InvariantCultureIgnoreCase))
+                    break;
+            }
+            if (idx == args.Count())
+            {
+                if (isRequired)
+                {
+                    Console.WriteLine($"Missing argument {argName}.");
+                    throw new InvalidOperationException();
+                }
+                return defaultStr;
+            }
+            else
+                return args[++idx];
+        }
 
+        static private void Help()
+        {
+            Console.WriteLine("oci-curl-cs [--tenancyid={tenancyid} --compartmentid={compartmentid} --userid={userid} --fingerprint={fingerprint} --privatekeypath={path to private key file} --password={password}] | [--profile {OCI profile name} --compartmentid={compartmentid}]");
+            Console.WriteLine(string.Format("{0,-25} The OCI tenancy id", "--tenancyid | -t"));
+            Console.WriteLine(string.Format("{0,-25} The OCI compartment id", "--compartmentid | -c"));
+            Console.WriteLine(string.Format("{0,-25} The OCI user id", "--userid | -u"));
+            Console.WriteLine(string.Format("{0,-25} The Fingerprint used for private key", "--fingerprint | -f"));
+            Console.WriteLine(string.Format("{0,-25} The private key path to the key file", "--privatekeypath | -k"));
+            Console.WriteLine(string.Format("{0,-25} The password to the key file(if any) ", "--password | -p"));
+            Console.WriteLine(string.Format("{0,-25} The profile for OCI (use as alternative to entering the details above individually)", "--profile"));
+        }
+
+        static private void ShowValues(string tenancyId, string userId, string fingerprint, string privateKeyPath, string password)
+        {
+            Console.WriteLine("Using values to connect to OCI:");
+            Console.WriteLine($"\ttenancyId: {tenancyId}");
+            Console.WriteLine($"\tuserId: {userId}");
+            Console.WriteLine($"\tfingerprint: {fingerprint}");
+            Console.WriteLine($"\tprivateKeyPath: {privateKeyPath}");
+            Console.WriteLine($"\tpassword: {password}");
+        }
+        public static int Main(string[] args)
+        {
+            string  tenancyId = string.Empty, 
+                    compartmentId = string.Empty, 
+                    userId = string.Empty, 
+                    fingerprint = string.Empty, 
+                    privateKeyPath = string.Empty, 
+                    privateKeyPassphrase = string.Empty, 
+                    profile = string.Empty;
+            try
+            {
+                // Optional Profile or the rest.  If Profile, we also need compartment.
+                profile = parseArg(args, "profile", string.Empty, false);
+                if (string.IsNullOrEmpty(profile))
+                {
+                    tenancyId = parseArg(args, "tenancyid", "t", true);
+                    compartmentId = parseArg(args, "compartmentid", "c", true);
+                    userId = parseArg(args, "userid", "u", true);
+                    fingerprint = parseArg(args, "fingerprint", "f", true);
+                    privateKeyPath = parseArg(args, "privatekeypath", "k", true);
+                    privateKeyPassphrase = parseArg(args, "password", "p", true);
+                }
+                else
+                {
+                    compartmentId = parseArg(args, "compartmentid", "c", true);
+                }
+            }
+            catch(InvalidOperationException)
+            {
+                Help();
+                return 1;
+            }
+
+            if (!string.IsNullOrEmpty(profile))
+            {
+                var parser = new Ini(Environment.ExpandEnvironmentVariables("%userprofile%//.oci/config"));
+                userId = parser.GetValue("user", profile);
+                fingerprint = parser.GetValue("fingerprint", profile);
+                tenancyId = parser.GetValue("tenancy", profile);
+                privateKeyPath = parser.GetValue("key_file", profile);
+            }
+
+            ShowValues(tenancyId, userId, fingerprint, privateKeyPath, "####");
             var signer = new RequestSigner(tenancyId, userId, fingerprint, privateKeyPath, privateKeyPassphrase);
 
             // Oracle Cloud Infrastructure APIs require TLS 1.2
@@ -159,6 +237,7 @@ namespace Oracle.Oci
             ExecuteRequest(request);
 
             Console.ReadKey();
+            return 0;
         }
 
         private static string ExecuteRequest(HttpWebRequest request)
