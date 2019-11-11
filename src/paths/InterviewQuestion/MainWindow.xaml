@@ -1,0 +1,52 @@
+﻿<Window x:Class="InterviewQuestion.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:InterviewQuestion"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button Name="go" Content="Go" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <TabControl Grid.Row="1">
+            <TabItem Header="Board">
+                <local:Board x:Name="board"/>
+            </TabItem>
+            <TabItem Header="Logs">
+                <TextBox HorizontalAlignment="Stretch" TextWrapping="Wrap" Name="tb" VerticalAlignment="Stretch" Grid.Row="1" VerticalScrollBarVisibility="Visible"/>
+            </TabItem>
+            <TabItem Header="Options">
+                <StackPanel Name="genoptionsPanel">
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>Min Width:</TextBlock>
+                            <TextBox Text="{Binding Path='MinWidth', Mode=TwoWay}"/>
+                            <TextBlock>Max Width:</TextBlock>
+                            <TextBox Text="{Binding Path='MaxWidth', Mode=TwoWay}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>Min Height:</TextBlock>
+                            <TextBox Text="{Binding Path='MinHeight', Mode=TwoWay}"/>
+                            <TextBlock>Max Height:</TextBlock>
+                            <TextBox Text="{Binding Path='MaxHeight', Mode=TwoWay}"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Block Count:</TextBlock>
+                        <TextBox Text="{Binding BlockCount}"/>
+                    </StackPanel>
+                    <Grid Name="pathOptionsPanel">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock>Step Delay(ms):</TextBlock>
+                            <TextBox Text="{Binding StepDelayInMs}"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
