@@ -79,6 +79,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Path2.cs" />
     <Compile Include="Path1.cs" />
     <Compile Include="PathFinderOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

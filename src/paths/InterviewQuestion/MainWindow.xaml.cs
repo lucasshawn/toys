@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -23,15 +24,15 @@ namespace InterviewQuestion
     {
         PathFinderOptions pathfinderOptions = new PathFinderOptions()
         {
-            StepDelayInMs = 250
+            StepDelayInMs = 50
         };
         GridGeneratorOptions generatorOptions = new GridGeneratorOptions()
         {
             BlockCount = 5,
-            MinWidth = 5,
-            MaxWidth = 10,
-            MinHeight = 5,
-            MaxHeight = 10
+            MinWidth = 25,
+            MaxWidth = 25,
+            MinHeight = 25,
+            MaxHeight = 25
         };
 
         public MainWindow()
@@ -51,6 +52,14 @@ namespace InterviewQuestion
             this.tb.AppendText(msg);
         }
 
+        private IPathFinder PathFactory()
+        {
+            if (path1.IsChecked.Value) return new Path1();
+            if (path2.IsChecked.Value) return new Path2();
+
+            return new Path1();
+        }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -60,7 +69,7 @@ namespace InterviewQuestion
             this.pathfinderOptions.Grid = grid;
 
             this.board.Initialize(pathfinderOptions);
-            IPathFinder path = new Path1();
+            IPathFinder path = PathFactory();
             path.Initialize(pathfinderOptions);
             path.Finished += (b) =>
             {
@@ -70,6 +79,15 @@ namespace InterviewQuestion
                     this.go.Click += Button_Click;
                 }));
             };
+            path.Log += (msg) =>
+            {
+                Application.Current.Dispatcher.Invoke(new Action(() =>
+                {
+                    this.tb.AppendText(msg);
+                    Debug.WriteLine(msg);
+                }));
+            };
+            path.NodeVisited += (p) => System.Threading.Thread.Sleep(pathfinderOptions.StepDelayInMs);
 
             this.go.Content = "Cancel";
             this.go.Click -= Button_Click;
@@ -86,8 +104,13 @@ namespace InterviewQuestion
                         board.AddVisited(p);
                     }));
                 };
-                path.FindPath(new Point(0, 0), new Point(9, 9));
+                path.FindPath(new Point(0, 0), new Point(grid.GetLength(0) - 1, grid.GetLength(1) - 1));
             });
+        }
+
+        private void Path_NodeVisited(Point pt)
+        {
+            throw new NotImplementedException();
         }
     }
 }

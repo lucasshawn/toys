@@ -8,10 +8,16 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Name="go" Content="Go" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+        <Grid Grid.Row="0">
+            <StackPanel>
+                <Button Name="go" Content="Go" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="Button_Click"/>
+                <RadioButton IsChecked="True" Name="path1" GroupName="Paths">Path1</RadioButton>
+                <RadioButton IsChecked="False" Name="path2" GroupName="Paths">Path2</RadioButton>
+            </StackPanel>
+        </Grid>
         <TabControl Grid.Row="1">
             <TabItem Header="Board">
                 <local:Board x:Name="board"/>
